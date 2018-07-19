@@ -94,6 +94,8 @@ linux-dev:
   env:
     CCACHE: sccache
     RUSTC_WRAPPER: sccache
+    CC: gcc-5
+    CXX: g++-5
   commands:
     - ./mach clean-nightlies --keep 3 --force
     - ./mach clean-cargo-cache --keep 3 --force
@@ -113,6 +115,8 @@ linux-rel-wpt:
   env:
     CCACHE: sccache
     RUSTC_WRAPPER: sccache
+    CC: gcc-5
+    CXX: g++-5
   commands:
     - ./mach clean-nightlies --keep 3 --force
     - ./mach clean-cargo-cache --keep 3 --force
@@ -127,6 +131,8 @@ linux-rel-css:
   env:
     CCACHE: sccache
     RUSTC_WRAPPER: sccache
+    CC: gcc-5
+    CXX: g++-5
   commands:
     - ./mach clean-nightlies --keep 3 --force
     - ./mach clean-cargo-cache --keep 3 --force
@@ -138,19 +144,25 @@ linux-rel-css:
     - ./etc/ci/clean_build_artifacts.sh
 
 linux-nightly:
-  - ./mach clean-nightlies --keep 3 --force
-  - ./mach clean-cargo-cache --keep 3 --force
-  - ./etc/ci/clean_build_artifacts.sh
-  - ./mach build --release
-  - ./mach package --release
-  - ./mach upload-nightly linux
-  - ./mach test-perf
-  - python3 ./etc/ci/performance/download_buildbot_timings.py --verbose
-  - aws s3 sync --size-only --acl public-read ./etc/ci/performance/output s3://servo-perf
-  - rm -rf ./python/_virtualenv
-  - ./etc/ci/update-wpt-checkout fetch-and-update-expectations
-  - ./etc/ci/update-wpt-checkout open-pr
-  - ./etc/ci/update-wpt-checkout cleanup
+  env:
+    CCACHE: sccache
+    RUSTC_WRAPPER: sccache
+    CC: gcc-5
+    CXX: g++-5
+  commands:
+    - ./mach clean-nightlies --keep 3 --force
+    - ./mach clean-cargo-cache --keep 3 --force
+    - ./etc/ci/clean_build_artifacts.sh
+    - ./mach build --release
+    - ./mach package --release
+    - ./mach upload-nightly linux
+    - ./mach test-perf
+    - python3 ./etc/ci/performance/download_buildbot_timings.py --verbose
+    - aws s3 sync --size-only --acl public-read ./etc/ci/performance/output s3://servo-perf
+    - rm -rf ./python/_virtualenv
+    - ./etc/ci/update-wpt-checkout fetch-and-update-expectations
+    - ./etc/ci/update-wpt-checkout open-pr
+    - ./etc/ci/update-wpt-checkout cleanup
 
 android:
   - ./mach clean-nightlies --keep 3 --force
